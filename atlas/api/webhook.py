@@ -53,7 +53,8 @@ def on_msg(args):
             current_app.config['JIRA_PASSWORD'],
         )
         jira_url = current_app.config['JIRA_URL']
-        jira = JIRA(jira_url, basic_auth=authinfo)
+        options = {'check_update': False}
+        jira = JIRA(jira_url, basic_auth=authinfo, options=options)
 
         # Retrieve issue
         issue = jira.issue(issue_key)
