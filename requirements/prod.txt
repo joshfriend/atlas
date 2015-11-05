@@ -1,0 +1,19 @@
+# Everything needed in production
+
+wheel
+
+# Flask
+Flask
+webargs
+blinker
+
+# Deployment
+gunicorn>=17.5
+
+# Auth
+Flask-HTTPAuth
+
+# Monitoring
+opbeat[flask]==3.1.1
+
+jira==1.0.3
