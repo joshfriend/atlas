@@ -8,7 +8,7 @@ import textwrap
 from flask import request, Response, current_app, abort, request, jsonify
 from webargs import fields
 from webargs.flaskparser import use_args
-from jira import JIRA
+from jira import JIRA, JIRAError
 
 from atlas.api import api_v1_blueprint as bp
 
@@ -57,11 +57,13 @@ def on_msg(args):
         jira = JIRA(jira_url, basic_auth=authinfo, options=options)
 
         # Retrieve issue
-        issue = jira.issue(issue_key)
-        if issue:
+        try:
+            issue = jira.issue(issue_key)
             return jsonify({
                 'text': get_formatted_issue_message(issue),
             })
+        except JIRAError as e:
+            log.error('Error looking up %s: %s', issue_key, e.text)
 
     return Response()
 
