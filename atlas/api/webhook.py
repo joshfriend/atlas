@@ -24,7 +24,7 @@ webhook_args = {
     'channel_name': fields.Str(required=True),
     'timestamp': fields.Float(),
     'user_id': fields.Str(),
-    'user_name': fields.Str(),
+    'user_name': fields.Str(required=True),
     'text': fields.Str(required=True),
     'trigger_word': fields.Str(),
 }
@@ -36,6 +36,10 @@ def on_msg(args):
     if args['token'] not in current_app.config['SLACK_WEBHOOK_TOKENS']:
         log.warning('Invalid token: %s', args['token'])
         abort(401)
+
+    if args['user_name'] == current_app.config['SLACK_WEBHOOK_USERNAME']:
+        # Avoid infinite feedback loop of bot parsing it's own messages :)
+        return Response()
 
     match = jira_key_re.search(args['text'])
     if match:
