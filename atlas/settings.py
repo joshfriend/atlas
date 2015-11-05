@@ -11,6 +11,7 @@ class Config(object):
     LOG_FORMAT = '%(asctime)s | %(name)-12s | %(levelname)-8s | %(message)s'
     LOG_DATE_FORMAT = '%m/%d/%Y %H:%M:%S'
     DEFAULT_LOG_LEVEL = logging.DEBUG
+    LOG_LEVEL = os.getenv('LOG_LEVEL')
 
     SLACK_TEAM_DOMAIN = os.getenv('SLACK_TEAM_DOMAIN')
     SLACK_WEBHOOK_TOKENS = os.getenv('SLACK_WEBHOOK_TOKENS', '').split(',')

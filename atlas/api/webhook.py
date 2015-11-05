@@ -18,15 +18,15 @@ jira_key_re = re.compile(r'[A-Z]+-\d+')
 
 webhook_args = {
     'token': fields.Str(required=True),
-    'team_id': fields.Str(required=True),
-    'team_domain': fields.Str(required=True),
-    'channel_id': fields.Str(required=True),
+    'team_id': fields.Str(),
+    'team_domain': fields.Str(),
+    'channel_id': fields.Str(),
     'channel_name': fields.Str(required=True),
-    'timestamp': fields.Float(required=True),
-    'user_id': fields.Str(required=True),
-    'user_name': fields.Str(required=True),
+    'timestamp': fields.Float(),
+    'user_id': fields.Str(),
+    'user_name': fields.Str(),
     'text': fields.Str(required=True),
-    'trigger_word': fields.Str(required=True),
+    'trigger_word': fields.Str(),
 }
 
 
@@ -40,6 +40,7 @@ def on_msg(args):
     match = jira_key_re.search(args['text'])
     if match:
         issue_key = match.group(0)
+        log.info('Message contained JIRA issue key: %s', issue_key)
 
         # Login to JIRA
         authinfo = (

@@ -26,7 +26,8 @@ def create_app(config_object=DefaultConfig):
     '''
     app = Flask(__name__)
     app.config.from_object(config_object)
-    opbeat.init_app(app)
+    if not app.debug:
+        opbeat.init_app(app)
     register_extensions(app)
     register_blueprints(app)
     configure_logging(app)
@@ -49,8 +50,12 @@ def configure_logging(app):
         'debug': logging.DEBUG,
     }
     default_level = app.config['DEFAULT_LOG_LEVEL']
-    level = log_levels.get(os.getenv('LOG_LEVEL'), default_level)
+    level = log_levels.get(app.config['LOG_LEVEL'], default_level)
     logging.basicConfig(format=app.config['LOG_FORMAT'],
                         datefmt=app.config['LOG_DATE_FORMAT'])
 
     log.setLevel(level)
+
+    # Api does its own request logging
+    _werkzeug_log = logging.getLogger('werkzeug')
+    _werkzeug_log.setLevel(logging.ERROR)
