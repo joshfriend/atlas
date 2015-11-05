@@ -44,7 +44,8 @@ def on_msg(args):
     match = jira_key_re.search(args['text'])
     if match:
         issue_key = match.group(0)
-        log.info('Message contained JIRA issue key: %s', issue_key)
+        log.info('Message from %s contained JIRA issue key: %s',
+                 args['user_name'], issue_key)
 
         # Login to JIRA
         authinfo = (
