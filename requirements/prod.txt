@@ -10,9 +10,6 @@ blinker
 # Deployment
 gunicorn>=17.5
 
-# Auth
-Flask-HTTPAuth
-
 # Monitoring
 opbeat[flask]==3.1.1
 
