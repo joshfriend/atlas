@@ -15,7 +15,6 @@ class Config(object):
 
     SLACK_TEAM_DOMAIN = os.getenv('SLACK_TEAM_DOMAIN')
     SLACK_WEBHOOK_TOKENS = os.getenv('SLACK_WEBHOOK_TOKENS', '').split(',')
-    SLACK_WEBHOOK_USERNAME = os.getenv('SLACK_WEBHOOK_USERNAME')
 
     JIRA_URL = os.getenv('JIRA_URL')
     JIRA_USERNAME = os.getenv('JIRA_USERNAME')

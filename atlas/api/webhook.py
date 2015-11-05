@@ -37,7 +37,7 @@ def on_msg(args):
         log.warning('Invalid token: %s', args['token'])
         abort(401)
 
-    if args['user_name'] == current_app.config['SLACK_WEBHOOK_USERNAME']:
+    if args['user_name'] == 'slackbot':
         # Avoid infinite feedback loop of bot parsing it's own messages :)
         return Response()
 
