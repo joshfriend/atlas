@@ -194,7 +194,7 @@ tmp_upload_dir = None
 
 errorlog = '-'
 loglevel = os.getenv('GUNICORN_LOG_LEVEL', 'info')
-accesslog = '-'
+accesslog = None
 
 #
 # Process naming
