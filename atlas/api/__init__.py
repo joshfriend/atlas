@@ -12,7 +12,7 @@ log = logging.getLogger('api')
 @api_v1_blueprint.after_request
 def log_response(response):
     """Log any requests/responses with an error code"""
-    if current_app.debug:  # pragma: no cover, debugging only
+    if log.getEffectiveLevel() == logging.DEBUG:  # pragma: no cover, debugging only
         log.debug('%7s: %s - %i', request.method, request.url,
                   response.status_code)
         if response.status_code >= 400:
