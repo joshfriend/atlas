@@ -100,7 +100,7 @@ _issue_colors = {
     'Bug': '#D24331',
     'Story': '#65AC43',
     'Task': '#377DC6',
-    'Sub-Task': '#377DC6',
+    'Sub-task': '#377DC6',
     'Epic': '#47335D',
 }
 
