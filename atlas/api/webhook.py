@@ -41,11 +41,10 @@ def on_msg(args):
         # Avoid infinite feedback loop of bot parsing it's own messages :)
         return Response()
 
-    match = jira_key_re.search(args['text'])
-    if match:
-        issue_key = match.group(0)
-        log.info('Message from %s contained JIRA issue key: %s',
-                 args['user_name'], issue_key)
+    issue_keys = jira_key_re.findall(args['text'])
+    if issue_keys:
+        log.info('Message from %s contained JIRA issue key(s): %s',
+                 args['user_name'], ', '.join(issue_keys))
 
         # Login to JIRA
         authinfo = (
@@ -56,14 +55,19 @@ def on_msg(args):
         options = {'check_update': False}
         jira = JIRA(jira_url, basic_auth=authinfo, options=options)
 
-        # Retrieve issue
-        try:
-            issue = jira.issue(issue_key)
+        # Retrieve issue(s)
+        issue_text = []
+        for issue_key in issue_keys:
+            try:
+                issue = jira.issue(issue_key)
+                issue_text.append(get_formatted_issue_message(issue))
+            except JIRAError as e:
+                log.error('Error looking up %s: %s', issue_key, e.text)
+
+        if issue_text:
             return jsonify({
-                'text': get_formatted_issue_message(issue),
+                'text': '\n`~~~`\n'.join(issue_text),
             })
-        except JIRAError as e:
-            log.error('Error looking up %s: %s', issue_key, e.text)
 
     return Response()
 
