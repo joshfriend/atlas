@@ -4,7 +4,7 @@ import re
 import os
 import time
 import logging
-from datetime import datetime, timedelta
+from datetime import datetime
 
 from flask import request, Response, current_app, abort, request, jsonify
 from webargs import fields
@@ -33,8 +33,11 @@ webhook_args = {
 
 
 def get_last_mention(channel, key):
-    key = '%s.%s' % (channel, key)
-    return redis.getset(key, time.time())
+    key = '%s:%s' % (channel, key)
+    last = redis.getset(key, time.time())
+    if last:
+        last = datetime.utcfromtimestamp(float(last))
+    return last
 
 
 @bp.route('/webhooks/jira', methods=['POST'])
@@ -70,10 +73,9 @@ def on_msg(args):
             try:
                 last_mention = get_last_mention(channel, issue_key)
                 if last_mention:
-                    date = datetime.utcfromtimestamp(float(last_mention))
-                    log.debug('%s last mentioned in #%s at %s', issue_key, channel, date)
-                    blackout = timedelta(seconds=current_app.config['JIRA_ID_BLACKOUT_PERIOD'])
-                    if datetime.now() <= date + blackout:
+                    log.debug('%s last mentioned in #%s at %s', issue_key, channel, last_mention)
+                    blackout = current_app.config['JIRA_ID_BLACKOUT_PERIOD']
+                    if datetime.now() <= last_mention + blackout:
                         continue
                 issue = jira.issue(issue_key)
                 attachments.append(format_attachment(issue))
