@@ -5,7 +5,6 @@
 pytest
 mock
 coverage
-factory-boy==2.4.0
 
 # Style checkers/linters
 flake8

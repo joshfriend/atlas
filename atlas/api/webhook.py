@@ -2,8 +2,10 @@
 
 import re
 import os
+import time
 import logging
 import textwrap
+from datetime import datetime
 
 from flask import request, Response, current_app, abort, request, jsonify
 from webargs import fields
@@ -11,6 +13,7 @@ from webargs.flaskparser import use_args
 from jira import JIRA, JIRAError
 
 from atlas.api import api_v1_blueprint as bp
+from atlas.extensions import redis
 
 log = logging.getLogger('api.webhook')
 
@@ -30,6 +33,17 @@ webhook_args = {
 }
 
 
+def _mark_seen(channel, key):
+    key = '%s.%s' % (channel, key)
+    ttl = current_app.config['JIRA_ID_BLACKOUT_PERIOD']
+    redis.setex(key, time.time(), ttl)
+
+
+def _issue_seen(channel, key):
+    key = '%s.%s' % (channel, key)
+    return redis.get(key)
+
+
 @bp.route('/webhooks/jira', methods=['POST'])
 @use_args(webhook_args)
 def on_msg(args):
@@ -41,10 +55,12 @@ def on_msg(args):
         # Avoid infinite feedback loop of bot parsing it's own messages :)
         return Response()
 
+    channel = args['channel_name']
+
     issue_keys = jira_key_re.findall(args['text'])
     if issue_keys:
-        log.info('Message from %s contained JIRA issue key(s): %s',
-                 args['user_name'], ', '.join(issue_keys))
+        log.info('Message from %s in #%s contained JIRA issue key(s): %s',
+                 args['user_name'], channel, ', '.join(issue_keys))
 
         # Login to JIRA
         authinfo = (
@@ -59,14 +75,23 @@ def on_msg(args):
         issue_text = []
         for issue_key in issue_keys:
             try:
+                last_mention = _issue_seen(channel, issue_key)
+                if last_mention:
+                    date = datetime.utcfromtimestamp(float(last_mention))
+                    log.debug('%s last mentioned in #%s at %s', issue_key, channel, date)
+                    continue
                 issue = jira.issue(issue_key)
                 issue_text.append(get_formatted_issue_message(issue))
+                _mark_seen(channel, issue_key)
             except JIRAError as e:
-                log.error('Error looking up %s: %s', issue_key, e.text)
+                if e.status_code == 404:
+                    log.warning('%s does not exist', issue_key)
+                else:
+                    log.error('Error looking up %s: %s', issue_key, e.text)
 
         if issue_text:
             return jsonify({
-                'text': '\n`~~~`\n'.join(issue_text),
+                'text': '\n\n'.join(issue_text),
             })
 
     return Response()

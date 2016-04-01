@@ -10,6 +10,7 @@ from flask import Flask
 from atlas.settings import ProdConfig, DevConfig
 from atlas.extensions import (
     opbeat,
+    redis,
 )
 from atlas.api import api_v1_blueprint, log
 
@@ -35,7 +36,7 @@ def create_app(config_object=DefaultConfig):
 
 
 def register_extensions(app):
-    pass
+    redis.init_app(app)
 
 
 def register_blueprints(app):
@@ -51,11 +52,9 @@ def configure_logging(app):
     }
     default_level = app.config['DEFAULT_LOG_LEVEL']
     level = log_levels.get(app.config['LOG_LEVEL'], default_level)
-    logging.basicConfig(format=app.config['LOG_FORMAT'],
-                        datefmt=app.config['LOG_DATE_FORMAT'])
+    logging.basicConfig(format=app.config['LOG_FORMAT'])
 
     log.setLevel(level)
 
     # Api does its own request logging
-    _werkzeug_log = logging.getLogger('werkzeug')
-    _werkzeug_log.setLevel(logging.ERROR)
+    logging.getLogger('werkzeug').setLevel(logging.ERROR)

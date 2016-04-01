@@ -4,4 +4,7 @@ in __init__.py
 """
 
 from opbeat.contrib.flask import Opbeat
+from flask_redis import FlaskRedis
+
 opbeat = Opbeat()
+redis = FlaskRedis()
