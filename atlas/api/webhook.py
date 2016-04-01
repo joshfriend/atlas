@@ -4,7 +4,6 @@ import re
 import os
 import time
 import logging
-import textwrap
 from datetime import datetime
 
 from flask import request, Response, current_app, abort, request, jsonify
@@ -72,7 +71,7 @@ def on_msg(args):
         jira = JIRA(jira_url, basic_auth=authinfo, options=options)
 
         # Retrieve issue(s)
-        issue_text = []
+        attachments = []
         for issue_key in issue_keys:
             try:
                 last_mention = _issue_seen(channel, issue_key)
@@ -81,7 +80,7 @@ def on_msg(args):
                     log.debug('%s last mentioned in #%s at %s', issue_key, channel, date)
                     continue
                 issue = jira.issue(issue_key)
-                issue_text.append(get_formatted_issue_message(issue))
+                attachments.append(format_attachment(issue))
                 _mark_seen(channel, issue_key)
             except JIRAError as e:
                 if e.status_code == 404:
@@ -89,27 +88,54 @@ def on_msg(args):
                 else:
                     log.error('Error looking up %s: %s', issue_key, e.text)
 
-        if issue_text:
+        if attachments:
             return jsonify({
-                'text': '\n\n'.join(issue_text),
+                'attachments': attachments,
             })
 
     return Response()
 
 
-def get_formatted_issue_message(issue):
-    message = textwrap.dedent("""\
-    *{issue.key}:* {issue.fields.summary}
-    `{issue.fields.issuetype.name}` - `{issue.fields.priority.name}` - `{issue.fields.status.name}`
-    """.format(issue=issue))
-    if issue.fields.assignee:
-        message += textwrap.dedent("""\
-        Assigned to: {issue.fields.assignee.displayName}
-        """.format(issue=issue))
-    message += os.path.join(
+_issue_colors = {
+    'Bug': '#D24331',
+    'Story': '#65AC43',
+    'Task': '#377DC6',
+    'Sub-Task': '#377DC6',
+    'Epic': '#47335D',
+}
+
+
+def format_attachment(issue):
+    issue_link = os.path.join(
         current_app.config['JIRA_URL'],
         'browse',
         issue.key
     )
-    message = message.rstrip('\n')
-    return message
+
+    if issue.fields.assignee:
+        assignee = issue.fields.assignee.displayName
+    else:
+        assignee = '(Unassigned)'
+
+    fields = [
+        {
+            'title': 'Status',
+            'value': issue.fields.status.name,
+            'short': True,
+        },
+        {
+            'title': 'Assignee',
+            'value': assignee,
+            'short': True,
+        },
+    ]
+
+    title = '%s: %s' % (issue.key, issue.fields.summary)
+    attachment = {
+        'title': title,
+        'title_link': issue_link,
+        'fields': fields,
+        'fallback': title,
+        'color': _issue_colors.get(issue.fields.issuetype.name, None),
+    }
+    return attachment
