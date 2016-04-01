@@ -4,7 +4,7 @@ import re
 import os
 import time
 import logging
-from datetime import datetime
+from datetime import datetime, timedelta
 
 from flask import request, Response, current_app, abort, request, jsonify
 from webargs import fields
@@ -32,15 +32,9 @@ webhook_args = {
 }
 
 
-def _mark_seen(channel, key):
+def get_last_mention(channel, key):
     key = '%s.%s' % (channel, key)
-    ttl = current_app.config['JIRA_ID_BLACKOUT_PERIOD']
-    redis.setex(key, time.time(), ttl)
-
-
-def _issue_seen(channel, key):
-    key = '%s.%s' % (channel, key)
-    return redis.get(key)
+    return redis.getset(key, time.time())
 
 
 @bp.route('/webhooks/jira', methods=['POST'])
@@ -74,14 +68,15 @@ def on_msg(args):
         attachments = []
         for issue_key in issue_keys:
             try:
-                last_mention = _issue_seen(channel, issue_key)
+                last_mention = get_last_mention(channel, issue_key)
                 if last_mention:
                     date = datetime.utcfromtimestamp(float(last_mention))
                     log.debug('%s last mentioned in #%s at %s', issue_key, channel, date)
-                    continue
+                    blackout = timedelta(seconds=current_app.config['JIRA_ID_BLACKOUT_PERIOD'])
+                    if datetime.now() <= date + blackout:
+                        continue
                 issue = jira.issue(issue_key)
                 attachments.append(format_attachment(issue))
-                _mark_seen(channel, issue_key)
             except JIRAError as e:
                 if e.status_code == 404:
                     log.warning('%s does not exist', issue_key)
