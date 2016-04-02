@@ -43,11 +43,15 @@ class Config(object):
     ADMIN_USERNAME = os.getenv('ADMIN_USERNAME')
     ADMIN_USERNAME = os.getenv('ADMIN_PASSWORD')
 
+    USE_SSL = False
+
 
 class ProdConfig(Config):
     """Production configuration."""
     ENV = 'prod'
     DEBUG = False
+
+    USE_SSL = True
 
 
 class DevConfig(Config):

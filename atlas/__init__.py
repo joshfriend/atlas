@@ -13,6 +13,7 @@ from atlas.extensions import (
     redis,
     db,
     migrate,
+    sslify,
 )
 from atlas.api import api_v1_blueprint, log
 from atlas.api.admin import admin
@@ -44,6 +45,7 @@ def register_extensions(app):
     migrate.init_app(app, db)
     redis.init_app(app)
     admin.init_app(app)
+    sslify.init_app(app, permanent=True)
 
 
 def register_blueprints(app):
