@@ -1,0 +1,25 @@
+{
+  "name": "atlas",
+  "description": "Slack bot for Atlassian product integration",
+  "scripts": {},
+  "env": {
+    "FLASK_ENV": "prod",
+    "LOG_LEVEL": "info",
+    "JIRA_PASSWORD": "CHANGE ME!",
+    "JIRA_URL": "CHANGE ME!",
+    "JIRA_USERNAME": "CHANGE ME!",
+    "OPBEAT_APP_ID": "CHANGE ME!",
+    "OPBEAT_ORG_ID": "CHANGE ME!",
+    "OPBEAT_SECRET_TOKEN": "CHANGE ME!"
+  },
+  "addons": [
+    "papertrail",
+    "heroku-postgresql",
+    "heroku-redis"
+  ],
+  "buildpacks": [
+    {
+      "url": "heroku/python"
+    }
+  ]
+}
