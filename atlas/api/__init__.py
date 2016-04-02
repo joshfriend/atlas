@@ -24,4 +24,4 @@ def log_response(response):
 
 # Import the resources to add the routes to the blueprint before the app is
 # initialized
-from . import webhook
+from .webhooks import jira_mention
