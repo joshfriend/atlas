@@ -22,6 +22,7 @@ if os.getenv("FLASK_ENV") == 'prod':
 else:
     DefaultConfig = DevConfig
 
+
 def create_app(config_object=DefaultConfig):
     '''An application factory, as explained here:
         http://flask.pocoo.org/docs/patterns/appfactories/

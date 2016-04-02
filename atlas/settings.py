@@ -23,7 +23,9 @@ class Config(object):
     JIRA_URL = os.getenv('JIRA_URL')
     JIRA_USERNAME = os.getenv('JIRA_USERNAME')
     JIRA_PASSWORD = os.getenv('JIRA_PASSWORD')
-    JIRA_ID_BLACKOUT_PERIOD = timedelta(seconds=env_int('JIRA_ID_BLACKOUT_PERIOD', 300))
+    JIRA_ID_BLACKOUT_PERIOD = timedelta(
+        seconds=env_int('JIRA_ID_BLACKOUT_PERIOD', 300)
+    )
 
     OPBEAT = {
         'ORGANIZATION_ID': os.getenv('OPBEAT_ORG_ID'),

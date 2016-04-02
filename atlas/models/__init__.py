@@ -1,3 +1,3 @@
 #!/usr/bin/env python
 
-from .slack_token import SlackToken
+from .slack_token import SlackToken  # noqa

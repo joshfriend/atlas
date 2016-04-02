@@ -8,6 +8,7 @@ from atlas.models import SlackToken
 
 admin = Admin(name='Atlas', template_mode='bootstrap3')
 
+
 class TokenModelView(ModelView):
     form_excluded_columns = [
         'created_at',

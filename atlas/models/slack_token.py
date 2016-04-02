@@ -1,7 +1,5 @@
 #!/usr/bin/env python
 
-from sqlalchemy import and_
-
 from atlas.extensions import db
 from atlas.database import SurrogatePK, TimestampedModel
 
@@ -12,11 +10,6 @@ class SlackToken(SurrogatePK, TimestampedModel):
     description = db.Column(db.String)
 
     @classmethod
-    def is_valid(cls, token, room=None):
-        conditions = [
-            cls.token == token,
-        ]
-        if room:
-            conditions.append(cls.room == room)
-        t = cls.query.filter(and_(*conditions)).first()
+    def is_valid(cls, token):
+        t = cls.query.filter(cls.token == token).first()
         return t is not None
