@@ -11,8 +11,11 @@ from atlas.settings import ProdConfig, DevConfig
 from atlas.extensions import (
     opbeat,
     redis,
+    db,
+    migrate,
 )
 from atlas.api import api_v1_blueprint, log
+from atlas.api.admin import admin
 
 if os.getenv("FLASK_ENV") == 'prod':
     DefaultConfig = ProdConfig
@@ -36,7 +39,10 @@ def create_app(config_object=DefaultConfig):
 
 
 def register_extensions(app):
+    db.init_app(app)
+    migrate.init_app(app, db)
     redis.init_app(app)
+    admin.init_app(app)
 
 
 def register_blueprints(app):

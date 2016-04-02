@@ -13,6 +13,7 @@ from jira import JIRA, JIRAError
 
 from atlas.api import api_v1_blueprint as bp
 from atlas.extensions import redis
+from atlas.models import SlackToken
 
 log = logging.getLogger('api.webhook')
 
@@ -43,7 +44,7 @@ def get_last_mention(channel, key):
 @bp.route('/webhooks/jira', methods=['POST'])
 @use_args(webhook_args)
 def on_msg(args):
-    if args['token'] not in current_app.config['SLACK_WEBHOOK_TOKENS']:
+    if not SlackToken.is_valid(args['token']):
         log.warning('Invalid token: %s', args['token'])
         abort(401)
 
