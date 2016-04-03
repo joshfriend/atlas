@@ -9,6 +9,7 @@ from webargs.flaskparser import use_args
 from atlas.api import api_v1_blueprint as bp, log
 from atlas.api.webhooks import slash_cmd_args
 from atlas.api.webhooks.jira_mention import jira_command
+from atlas.utils import slack_encode
 
 
 class SlashCommand(MethodView):
@@ -26,9 +27,10 @@ class SlashCommand(MethodView):
         if command == '/jira':
             return jira_command(args)
         elif command == '/debug':
+            debug_data = '```\n%s\n```' % json.dumps(request.form, indent=2)
             return jsonify({
                 'response_type': 'ephemeral',
-                'text': '```\n%s\n```' % json.dumps(request.form, indent=2)
+                'text': slack_encode(debug_data)
             })
         else:
             log.error('Unknown command: %s', command)

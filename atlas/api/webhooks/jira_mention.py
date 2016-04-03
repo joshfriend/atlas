@@ -12,6 +12,7 @@ from jira import JIRA, JIRAError
 from atlas.api import api_v1_blueprint as bp, ignore_slackbot
 from atlas.api.webhooks import log, webhook_args
 from atlas.extensions import redis
+from atlas.utils import slack_encode
 
 jira_key_re = re.compile(r'[A-Z]+-\d+')
 
@@ -118,10 +119,10 @@ def format_attachment(issue):
 
     title = '%s: %s' % (issue.key, issue.fields.summary)
     attachment = {
-        'title': title,
+        'title': slack_encode(title),
         'title_link': issue_link,
         'fields': fields,
-        'fallback': title,
+        'fallback': slack_encode(title),
         'color': _issue_colors.get(issue.fields.issuetype.name, None),
     }
     return attachment
