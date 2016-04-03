@@ -33,6 +33,10 @@ def jira_webhook(args):
 
 def jira_command(args):
     channel = args['channel_name']
+    if channel == 'directmessage':
+        # Channel name is "directmessage" for all direct messages, so we have
+        # to use the channel ID to keep them separate.
+        channel = 'dm:%s' % args['channel_id']
 
     issue_keys = jira_key_re.findall(args['text'])
     if not issue_keys:
