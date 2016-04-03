@@ -21,10 +21,10 @@ class SlashCommand(MethodView):
     @use_args(slash_cmd_args)
     def post(self, args):
         command = args['command']
-        if command == 'jira':
+        if command == '/jira':
             return jira_command(args)
         else:
-            log.error('Unknown command: /%s', command)
+            log.error('Unknown command: %s', command)
             return jsonify({
                 "response_type": "ephemeral",
                 "text": "I don't know what to do with that command :(",
