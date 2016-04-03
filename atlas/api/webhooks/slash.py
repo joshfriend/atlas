@@ -1,6 +1,8 @@
 #!/usr/bin/env python
 
-from flask import jsonify, Response
+import json
+
+from flask import jsonify, Response, request
 from flask.views import MethodView
 from webargs.flaskparser import use_args
 
@@ -23,6 +25,11 @@ class SlashCommand(MethodView):
         command = args['command']
         if command == '/jira':
             return jira_command(args)
+        elif command == '/debug':
+            return jsonify({
+                'response_type': 'ephemeral',
+                'text': '```\n%s\n```' % json.dumps(request.form, indent=2)
+            })
         else:
             log.error('Unknown command: %s', command)
             return jsonify({
