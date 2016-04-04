@@ -13,7 +13,6 @@ gunicorn==19.4.5
 opbeat[flask]==3.1.1
 
 jira==1.0.3
-Flask-Admin==1.4.0
 Flask-Redis==0.1.0
 Flask-Migrate==1.8.0
 Flask-SQLAlchemy==2.1

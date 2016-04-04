@@ -16,7 +16,6 @@ from atlas.extensions import (
     sslify,
 )
 from atlas.api import api_v1_blueprint, log
-from atlas.api.admin import admin
 
 if os.getenv("FLASK_ENV") == 'prod':
     DefaultConfig = ProdConfig
@@ -44,7 +43,6 @@ def register_extensions(app):
     db.init_app(app)
     migrate.init_app(app, db)
     redis.init_app(app)
-    admin.init_app(app)
     sslify.init_app(app, permanent=True)
 
 

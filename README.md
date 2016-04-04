@@ -21,6 +21,33 @@ You may remove the `OPBEAT_*` keys if you don't want to use the
 
 The app will be deployed to `https://<your-appname>.herokuapp.com`.
 
+### Managing Webhook Security Tokens
+Use the `manage.py` script to manage your webhook security tokens.
+
+To run commands on Heroku, use `heroku run`:
+
+```
+herokou run manage.py ...
+```
+
+#### Add a Token
+```
+$ manage.py token add XXXXXXXXXXXXXXXXXX -c random -d "Description of the token"
+```
+
+#### Remove a Token
+```
+$ manage.py token remove XXXXXXXXXXXXXXXXXX
+Token removed!
+```
+
+#### List All Tokens
+```
+$ manage.py token list
+Registered tokens:
+`XXXXXXXXXXXXXXXXXX` in channel #random: Description of the token
+```
+
 ### Channel Listening
 Atlas can listen to messages sent on channels for JIRA IDs. You have two
 options with this capability:
@@ -38,13 +65,7 @@ webhooks for each channel.
 * Set the URL of the new command to
   `https://<your-appname>.herokuapp.com/api/v1/webhooks/jira`
 * The request method should be set to POST
-* Copy the value of the "Token" field. Go to
-  `https://<your-appname>.herokuapp.com/admin/slacktoken/new` and create a new
-  entry for that token.
-    - Set the room name used with the hook. Use `*` if you want the hook to
-      listen on all channels and use a trigger word.
-    - Enter a description for the token so you can identify what it is for
-      later on.
+* Add the token to Atlas. (see "Managing Webhook Security Tokens")
 
 ### Slash Command
 **This is required to use Atlas with direct messages**. This is because you are
@@ -54,12 +75,7 @@ not permitted to have webhooks that listen on private messages.
 * Set the URL of the new command to
   `https://<your-appname>.herokuapp.com/api/v1/webhooks/slash`
 * The request method should be set to POST
-* Copy the value of the "Token" field. Go to
-  `https://<your-appname>.herokuapp.com/admin/slacktoken/new` and create a new
-  entry for that token.
-    - Use `*` as the room name (since a slash command applies to all channels)
-    - Enter a description for the token so you can identify what it is for
-      later on.
+* Add the token to Atlas. (see "Managing Webhook Security Tokens")
 
 ### Additional Configuraiton
 

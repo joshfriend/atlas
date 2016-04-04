@@ -1,6 +1,8 @@
 #!/usr/bin/env python
 
+import re
 import json
+from textwrap import dedent
 
 from flask import jsonify, Response, request
 from flask.views import MethodView
@@ -28,16 +30,18 @@ class SlashCommand(MethodView):
             return jira_command(args)
         elif command == '/debug':
             debug_data = '```\n%s\n```' % json.dumps(request.form, indent=2)
-            return jsonify({
-                'response_type': 'ephemeral',
-                'text': slack_encode(debug_data)
-            })
+            return ephemeral_message(debug_data)
         else:
             log.error('Unknown command: %s', command)
-            return jsonify({
-                "response_type": "ephemeral",
-                "text": "I don't know what to do with that command :(",
-            })
+            msg = 'I don\'t know what to do with that command :('
+            return ephemeral_message(msg)
 
 
 bp.add_url_rule('/webhooks/slash', view_func=SlashCommand.as_view('slash'))
+
+
+def ephemeral_message(txt):
+    return jsonify({
+        'response_type': 'ephemeral',
+        'text': slack_encode(txt),
+    })
