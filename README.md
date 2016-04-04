@@ -27,23 +27,25 @@ Use the `manage.py` script to manage your webhook security tokens.
 To run commands on Heroku, use `heroku run`:
 
 ```
-herokou run manage.py ...
+herokou run python manage.py token list
+Running python manage.py token list on <appname>.... up, run.1448
+...
 ```
 
 #### Add a Token
 ```
-$ manage.py token add XXXXXXXXXXXXXXXXXX -c random -d "Description of the token"
+$ python manage.py token add XXXXXXXXXXXXXXXXXX -c random -d "Description of the token"
 ```
 
 #### Remove a Token
 ```
-$ manage.py token remove XXXXXXXXXXXXXXXXXX
+$ python manage.py token remove XXXXXXXXXXXXXXXXXX
 Token removed!
 ```
 
 #### List All Tokens
 ```
-$ manage.py token list
+$ python manage.py token list
 Registered tokens:
 `XXXXXXXXXXXXXXXXXX` in channel #random: Description of the token
 ```
@@ -65,7 +67,8 @@ webhooks for each channel.
 * Set the URL of the new command to
   `https://<your-appname>.herokuapp.com/api/v1/webhooks/jira`
 * The request method should be set to POST
-* Add the token to Atlas. (see "Managing Webhook Security Tokens")
+* Add the token to Atlas. (see ["Managing Webhook Security Tokens"]
+  (#managing-webhook-security-tokens))
 
 ### Slash Command
 **This is required to use Atlas with direct messages**. This is because you are
@@ -75,7 +78,8 @@ not permitted to have webhooks that listen on private messages.
 * Set the URL of the new command to
   `https://<your-appname>.herokuapp.com/api/v1/webhooks/slash`
 * The request method should be set to POST
-* Add the token to Atlas. (see "Managing Webhook Security Tokens")
+* Add the token to Atlas. (see ["Managing Webhook Security Tokens"]
+  (#managing-webhook-security-tokens))
 
 ### Additional Configuraiton
 
