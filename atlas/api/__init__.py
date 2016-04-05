@@ -3,7 +3,7 @@
 import logging
 import functools
 
-from flask import Blueprint, request, abort, Response
+from flask import Blueprint, request, abort, Response, g
 
 from atlas.models import SlackToken
 
@@ -22,16 +22,15 @@ def _get_arg(field):
 
 @api_v1_blueprint.before_request
 def check_token():
+    g.valid_token = False
     token = _get_arg('token')
     if not token:
-        log.error('No token provided!')
-        abort(401)
-    if SlackToken.is_valid(token):
+        log.warning('No token provided!')
+    elif SlackToken.is_valid(token):
         log.debug('Valid request token: %s', token)
-        pass
+        g.valid_token = True
     else:
         log.warning('Unkonwn Slack token: %s', token)
-        abort(401)
 
 
 @api_v1_blueprint.after_request
@@ -54,6 +53,15 @@ def ignore_slackbot(func):
         if _get_arg('user_name') == 'slackbot':
             log.debug('Ignored request from slackbot')
             return Response()
+        return func(*args, **kwargs)
+    return wrapper
+
+
+def require_token(func):
+    @functools.wraps(func)
+    def wrapper(*args, **kwargs):
+        if not g.valid_token:
+            abort(401)
         return func(*args, **kwargs)
     return wrapper
 

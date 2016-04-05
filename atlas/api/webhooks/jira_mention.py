@@ -9,7 +9,7 @@ from flask import Response, current_app, jsonify
 from webargs.flaskparser import use_args
 from jira import JIRA, JIRAError
 
-from atlas.api import api_v1_blueprint as bp, ignore_slackbot
+from atlas.api import api_v1_blueprint as bp, ignore_slackbot, require_token
 from atlas.api.webhooks import log, webhook_args
 from atlas.extensions import redis
 from atlas.utils import slack_encode
@@ -28,6 +28,7 @@ def get_last_mention(channel, key):
 @bp.route('/webhooks/jira', methods=['POST'])
 @use_args(webhook_args)
 @ignore_slackbot
+@require_token
 def jira_webhook(args):
     return jira_command(args)
 

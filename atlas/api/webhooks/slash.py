@@ -8,7 +8,7 @@ from flask import jsonify, Response, request
 from flask.views import MethodView
 from webargs.flaskparser import use_args
 
-from atlas.api import api_v1_blueprint as bp, log
+from atlas.api import api_v1_blueprint as bp, log, require_token
 from atlas.api.webhooks import slash_cmd_args
 from atlas.api.webhooks.jira_mention import jira_command
 from atlas.utils import slack_encode
@@ -21,8 +21,13 @@ class SlashCommand(MethodView):
         # certificate. These requests will include a parameter `ssl_check` set
         # to 1. Mostly, you may ignore these requests, but please do respond
         # with a HTTP `200 OK`.
-        return Response()
+        if request.args.get('ssl_check', 0, type=int):
+            log.info('SSL Check...')
+            return Response()
+        else:
+            abort(400)
 
+    @require_token
     @use_args(slash_cmd_args)
     def post(self, args):
         command = args['command']
