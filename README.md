@@ -78,8 +78,7 @@ not permitted to have webhooks that listen on private messages.
 * Set the URL of the new command to
   `https://<your-appname>.herokuapp.com/api/v1/webhooks/slash`
 * The request method should be set to POST
-* Add the token to Atlas. (see ["Managing Webhook Security Tokens"]
-  (#managing-webhook-security-tokens))
+* Add the token to Atlas. (see ["Managing Webhook Security Tokens"](#managing-webhook-security-tokens))
 
 ### Additional Configuraiton
 
